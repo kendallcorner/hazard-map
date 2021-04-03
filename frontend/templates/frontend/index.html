@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Hazard Mapping</title>
+    <meta charset="utf-8"></meta>
+    <link href="css/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="css/styles.css" rel="stylesheet"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-33031016-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-33031016-1');
+    </script>
+
+  </head>
+
+  <body>
+    <div id="map"></div>
+  {% load static %}
+  <script src="{% static "frontend/main.js" %}"></script>
+    <div id="side-panel" class="pre-scrollable">
+      <div id="title">
+        <h1>Load Site</h1>
+      </div>
+        <div id="controls">
+            <div id="new-load-btn-group" class="btn-group" role="group" aria-label="New or Load Site">
+                <button class="btn btn-primary" type="button" id="new-site">New Site</button>
+                <input type="file" id="load-site" style="display:none">
+                <label class="btn btn-primary" for="load-site">Load Site</label></input>
+            </div>
+            <div id="edit-save-btn-group" class="btn-group" role="group" aria-label="Edit or Save Site">
+            </div>
+        </div>
+        <div id="navigator">
+        </div>
+        <div id="footer">
+          (c) 2021 RYSK Consulting LLC 
+          <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        </div>
+    </div>
+    <div id="modalDiv">
+    </div>
+
+    <script id="site-template" type="text/x-handlebars-template">
+        <h2>Site</h2>
+
+        <label> Search:
+          <input id="search-box" class="controls" type="text" size="30" placeholder="Search Box">
+        </label>
+        <ol>
+          <li> Find the site on the map. Use the search box if needed.</li>
+          <li>click the middle of the site</li>
+          <li>hit submit</li>
+        </ol>
+        <div class="form" id="form">
+          <label class="form">Site Name: 
+            <input type="text" id="name" value="{{name}}"/></label>
+          <div class="form">
+          <label>Latitude: 
+            <input type="text" id="latitude" value="{{latitude}}"/></label>
+          <label>Longitude: 
+            <input type="text" id="longitude" value="{{longitude}}"/></label>
+          </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="sumbit and cancel">
+            <button id="submit-button" class="btn btn-primary" type="button">submit</button>
+            <button id="site-cancel-button" class="btn btn-primary" type="button">cancel</button>
+        </div>
+    </script>
+    <script id="site-template-buttons" type="text/x-handlebars-template">
+      <button class='btn btn-primary' type='button' id='edit-site'>Edit Site</button>
+      <button class='btn btn-primary' type='button' id='save-site'>Save Site</button>
+    </script>
+    {% comment %} <script id="site-contents-panel" type="text/x-handlebars-template">
+        <div class="siteScenarios"> 
+          <h2>Site Scenarios</h2>
+          <ul class="form" id="form">
+            {{#each scenarioList}}
+              <li class="scenario">  
+                <div class="dropdown">
+                  <button class="btn btn-light dropdown-toggle scenarioDropdown" type="button" data-toggle="dropdown">
+                    {{this.name}}
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><button class="btn btn-light dropdown-button" id="{{this.scenarioId}}-delete">delete</button></li>
+                    <li><button class="btn btn-dark dropdown-button" id="{{this.scenarioId}}-edit">edit</button></li>
+                    <li><button class="btn btn-light dropdown-button" id="{{this.scenarioId}}-hide">
+                        {{#if this.hidden}}
+                          unhide
+                        {{else}}
+                          hide
+                        {{/if}}
+                    </button></li>
+                    <li><button class="btn btn-light dropdown-button" id="{{this.scenarioId}}-hideRanges">
+                        {{#if this.rangesHidden}}
+                          unhide hazard ranges
+                        {{else}}
+                          hide hazard ranges
+                        {{/if}}
+                    </button></li>
+                  </ul>
+                </div>
+              </li>
+            {{/each}}
+          </ul>
+          <div class="btn-group" role="group" aria-label="sumbit and cancel">
+            <button class="btn btn-primary" type="button" id="new-scenario">Add Scenario</button>
+            <button class="btn btn-primary" type="button" id="hide-scenarios">Hide all</button>
+          </div>
+        </div>
+        <div class="siteBubblePlots">
+          <h2>Site Plots</h2>
+          <ul class="form" id="form">
+            {{#each bubbleplotList}}
+              <li class="bubbleplot">  
+                <div class="dropdown">
+                  <button class="btn btn-light dropdown-toggle scenarioDropdown" type="button" data-toggle="dropdown">
+                    {{this.name}}
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><button class="btn btn-light dropdown-button" id="{{this.bubbleplotId}}-delete">delete</button></li>
+                    <li><button class="btn btn-dark dropdown-button" id="{{this.bubbleplotId}}-edit">edit</button></li>
+                    <li><button class="btn btn-light dropdown-button" id="{{this.bubbleplotId}}-hide">
+                        {{#if this.hidden}}
+                          unhide
+                        {{else}}
+                          hide
+                        {{/if}}
+                    </button></li>
+                  </ul>
+                </div>
+              </li>
+            {{/each}}
+          </ul>
+          <div class="btn-group" role="group" aria-label="sumbit and cancel">
+            <button class="btn btn-primary" type="button" id="new-bubbleplot">Add Plot</button>
+            <button class="btn btn-primary" type="button" id="hide-bubbleplots">Hide all</button>
+          </div>
+        </div>
+    </script>
+    <script id="scenario-panel" type="text/x-handlebars-template">
+      <h2>Scenario</h2>
+      <div class="form" id="form">
+        <div class="form scenario-info">
+          <label>Scenario Name*: 
+            <input type="text" id="name" value="{{name}}">
+          </label>
+
+          <label>Material: 
+            <input type="text" id="material" value="{{material}}" >
+          </label>
+          <div class="form latlong-group">
+            <label>Latitude*: 
+              <input type="text" id="latitude" value="{{latitude}}">
+            </label>
+
+            <label>Longitude*: 
+              <input type="text" id="longitude" value="{{longitude}}">
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-long" type="button" data-toggle="modal" data-target="#modelModal">Model Scenario</button>
+
+        <div class="form range-inputs">
+          <div class="form range group">
+            <label>Consequence 1 Range (m): 
+              <input type="text" id="range-0" value="{{range0}}">
+            </label>
+
+            <label>Frequency for Range 1: 
+              <input type="text" id="frange-0" value="{{frequency0}}">
+            </label>
+          </div>
+          
+          <div class="form range group">
+            <label>Consequence 2 Range (m): 
+              <input type="text" id="range-1" value="{{range1}}">
+            </label>
+
+            <label>Frequency for Range 2: 
+              <input type="text" id="frange-1" value="{{frequency1}}">
+            </label>
+          </div>
+          
+          <div class="form range group">
+            <label>Consequence 3 Range (m): 
+              <input type="text" id="range-2" value="{{range2}}">
+            </label>
+
+            <label>Frequency for Range 3: 
+              <input type="text" id="frange-2" value="{{frequency2}}">
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button id="submit-button" data-scenario-id="{{scenarioID}}" class="btn btn-primary" type="button">submit</button>
+        <button id="scenario-cancel-button" class="btn btn-primary" type="button">cancel</button>
+      </div>
+    </script>
+    <script id="bubbleplot-panel" type="text/x-handlebars-template">
+        <div> 
+          <h2>Bubbleplot Setup</h2>
+          <div class="form" id="form">
+            <label>Bubbleplot Name*: 
+              <input type="text" id="name" value="{{name}}">
+            </label>
+            {{#each scenarioList}}
+              <div class="scenario form" id="{{this.scenarioId}}">{{this.name}}
+                <ul>
+                  <li class="range form">
+                    <input type="checkbox" name="{{this.name}}-range0" id="{{this.scenarioId}}-range0">Range 0 ({{this.range0}})
+                  </li>
+                  <li class="range form">
+                    <input type="checkbox" name="{{this.name}}-range1" id="{{this.scenarioId}}-range1">Range 1 ({{this.range1}})
+                  </li>
+                  <li class="range form">
+                    <input type="checkbox" name="{{this.name}}-range2" id="{{this.scenarioId}}-range2">Range 2 ({{this.range2}})
+                  </li>
+                </ul>
+              </div>
+            {{/each}}
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="submit-button" data-scenario-id="{{scenarioID}}" class="btn btn-primary" type="button">submit</button>
+            <button id="bubbleplot-cancel-button" class="btn btn-primary" type="button">cancel</button>
+          </div>
+        </div>
+    </script>
+    <script id="model-modal" type="text/x-handlebars-template">
+      <div class="modal fade" id="modelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel">TNO modeling</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+              <div class="modal-body">
+                <div class="container-fluid">
+                  <div class="row">
+                    <button class="btn btn-primary btn-long" id="metric-english-toggle" data="metric">Metric: Click for English</button>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="TNOform">Volume of Congested Area (<span id="tnoVolumeUnit">m^3</span>)</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input class="TNOform" type="text" id="tnoVolume" value="1000">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="TNOform">Heat of Combustion (<span id="tnoHocUnit">kJ/m^3</span>)</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input class="TNOform" type="text" id="tnoHeat" value="3500">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="TNOform">Atmospheric Pressure (<span class="tnoPressureUnit">mbar</span>)</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input class="TNOform" type="text" id="tnoAtmPress" value="1013.25">
+                    </div>
+                    <div class="col-md-6">
+                      <select id="tnoCurveSelect">
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="TNOform">Overpressure Thresholds (<span class="tnoPressureUnit">mbar</span>)</label>
+                  </div>
+                  <div class="row">
+                    <input class="TNOform" type="text" id="tnoPressThresh1" value="50">
+                    <input class="TNOform" type="text" id="tnoPressThresh2" value="100">
+                    <input class="TNOform" type="text" id="tnoPressThresh3" value="500">
+                  </div>
+                  <div class="row">
+                     <a href="https://processsafetyrelief.com/2019/11/22/TNO-model/" target="_blank">More information on TNO explosion curves and use of the model.</a>
+                  </div>
+                </div>
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="save-model">Save model</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </script> {% endcomment %}
+    <script defer src="js/github.js"></script>
+  </body>
+</html>

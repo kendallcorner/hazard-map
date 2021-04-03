@@ -1,0 +1,114 @@
+#map {
+	height: 100vh;
+	width: 65vw;
+	overflow: hidden;
+	float: left;
+	padding-right: 5px;
+}
+
+#side-panel {
+	width: 33vw;
+	height: 100vh;
+	overflow: scroll;
+	float: right;
+	display: flex;
+	flex-direction: column;
+	padding-left: 20px;
+	padding-right: 40px;
+}
+
+#title {
+	width: 100%;
+	flex: ;
+	float: right;
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+
+.menu {
+	list-style: none;
+}
+
+.form {
+	list-style: none;
+	padding-bottom: 10px;
+}
+input {
+	width: 100px;
+}
+
+#search-box {
+	width: 100%;
+}
+
+.form > label {
+	width: 100px;
+	margin-bottom: 0;
+}
+
+.open > .dropdown-menu {
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	font-size: 22px;
+}
+
+h2 {
+	font-size: 20px;
+}
+
+.scenarioDropdown {
+	width: 100%;
+	text-align: left;
+}
+
+.siteScenarios .controls {
+	display: inline-block;
+}
+
+.btn-primary {
+	width: 110px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
+.btn-long {
+	width: 220px;
+}
+
+@media (max-width: 900px) {
+	#map {
+		height: 500px;
+		width: 100vw;
+		overflow: hidden;
+	}
+
+	#side-panel {
+		width: 100vw;
+		display: flex;
+	} 
+}
+
+#footer {
+  position: absolute;
+  bottom: 2px;
+  right: 1px;
+  font-size: 70%;
+}
+
+.dropdown-button {
+	width: 100%;
+	text-align: left;
+	background-color: #EBEBEB;
+}
+
+.dropdown-button:hover, .dropdown-button:focus, .dropdown-button:active, .dropdown-button.active {
+	background-color: #FFF;
+}
+
+.pre-scrollable {
+	max-height: 100vh;
+}
