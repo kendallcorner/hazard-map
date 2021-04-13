@@ -1,5 +1,5 @@
 /*jshint esversion: 7 */
-const Handlebars = require("handlebars");
+const Handlebars = require("handlebars/dist/cjs/handlebars");
 exports.getElementById = getElementById;
 exports.initMap = initMap;
 exports.initViews = initViews;
