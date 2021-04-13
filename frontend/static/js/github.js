@@ -1,7 +1,7 @@
 var script = document.createElement('script');
 
-console.log('SECRET_KEY :>> ', process.env.GCP_KEY);
+SECRET_KEY = 'nonsense';
 
-script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key='+process.env.GCP_KEY+'&callback=initMap&libraries=places');
+script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key='+SECRET_KEY+'&callback=initMap&libraries=places');
 
 document.body.appendChild(script);
