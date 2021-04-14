@@ -10,6 +10,7 @@ from . import views
 urlpatterns = [
     # path('', include(router.urls)),
     path('sites/', views.SiteViewSet.as_view({'get': 'list'}) ),
+    path('scenarios/', views.ScenarioViewSet.as_view({'get': 'list', 'post': 'create'}) ),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
