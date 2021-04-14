@@ -121,7 +121,7 @@ function setupModel(EM) {
     });
 
     try {
-        $.getJSON("data/tnoTable.json", function(json) {
+        $.getJSON("static/data/tnoTable.json", function(json) {
             state.tnoTable = json;
         });
     } catch (error) {

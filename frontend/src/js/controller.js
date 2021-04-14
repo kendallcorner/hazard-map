@@ -12,30 +12,17 @@ function initController(EM) {
         EM.emit("change-panel");
     });
 
-    const loadButton = getElementById('load-site');
-    loadButton.addEventListener('change', ()=> {
-        //loads existing JSON file as a location.
-        const fileURL = window.URL.createObjectURL(loadButton.files[0]);
-        console.log(fileURL);
-        //https://stackoverflow.com/questions/35294633/what-is-the-vanilla-js-version-of-jquerys-getjson#answers
-        const request = new XMLHttpRequest();
-        request.open('GET', fileURL, true);
-        request.onload = function() {
-            if (request.status >= 200 && request.status < 400) {
-                const json = JSON.parse(request.responseText);
-                window.state.site = json;
-                window.state.panel = "site-content";
-                EM.emit("change-panel");
-            } else {
-                throw new Error("File did not load properly: " + request.status);
+    getElementById('load-site').addEventListener('click', ()=> {
+        return fetch("sites").then(response => {
+            if (response.status > 400) {
+
             }
-        };
-
-        request.onerror = function() {
-            throw new Error("File did not load properly: " + request.status);
-        };
-
-        request.send();
+            return response.json();
+        }).then(data => {
+            window.state.panelData = {sites:data};
+            window.state.panel = "load-site-panel";
+            EM.emit("change-panel");
+        });
     });
 
     EM.on("panel-created", () => {
@@ -86,7 +73,7 @@ function setUpPlacesSearch(element) {
                 map: window.state.map,
                 title: place.formatted_address,
                 position: place.geometry.location,
-                icon: "assets/searchPin.png"
+                icon: "static/assets/searchPin.png"
             });
             window.googleAPI.maps.event.addListener(marker, "click", latLongListener);
             window.state.placesMarkers.push(marker);
@@ -395,8 +382,8 @@ function placeDraggableMarkerOnMap(latitude, longitude){
     const myLatLng = new window.googleAPI.maps.LatLng(latitude, longitude);
     if (window.state.searchMarker) window.state.searchMarker.setMap(null);
     const icon = window.state.panel == "scenario-editor" ?
-        "assets/scenario.png" :
-        "assets/sitePin.png";
+        "static/assets/scenario.png" :
+        "static/assets/sitePin.png";
     window.state.searchMarker = new window.googleAPI.maps.Marker({
         map: window.state.map,
         position: myLatLng,

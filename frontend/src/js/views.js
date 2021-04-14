@@ -12,7 +12,10 @@ function initViews(EM) {
     EM.on("change-panel", () => {
         const panel = window.state.panel;
         const site = window.state.site;
-        if (panel === "site-editor") {
+        const data = window.state.panelData;
+        if (panel === "load-site-panel") {
+            showLoadSite(data, panel, EM)
+        } else if (panel === "site-editor") {
             showSiteEditor(site, EM);
             mapSiteMarker(site);
         } else if (panel === "site-content") {
@@ -128,7 +131,7 @@ function mapSiteMarker (location) {
         map: window.state.map,
         title: location.name,
         position: myLatLng,
-        icon: "assets/sitePin.png"
+        icon: "static/assets/sitePin.png"
     });
 }
 
@@ -182,7 +185,7 @@ function mapScenario (scenarioId, scenario) {
         map: window.state.map,
         title: name,
         position: myLatLng,
-        icon: "assets/scenario.png"
+        icon: "static/assets/scenario.png"
     });
 }
 
@@ -218,6 +221,14 @@ function showSiteEditor(site, EM) {
     createHandlebarsViewFromTemplateId("navigator", "site-template", site);
 
     getElementById("name").select();
+    EM.emit("panel-created");
+}
+
+/*
+ * Bring up load site panel
+ */
+function showLoadSite(data, panel, EM) {
+    createHandlebarsViewFromTemplateId("navigator", panel, data);
     EM.emit("panel-created");
 }
 
